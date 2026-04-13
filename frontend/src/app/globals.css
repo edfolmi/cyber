@@ -1,28 +1,88 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8f9fa;
-  --foreground: #2d3748;
-  --primary: #38a169;
-  --secondary: #68d391;
-  --accent: #4a5568;
-  --border: #e2e8f0;
-  --input-bg: #ffffff;
+  --canvas: #030303;
+  --surface: #0c0c0c;
+  --surface-solid: #0a0a0a;
+  --elevated: #141414;
+  --ink: #fafafa;
+  --ink-muted: #8a8a8a;
+  --line: #262626;
+  --line-strong: #3f3f3f;
+  --wash: #101010;
+  --danger: #ef4444;
+  --danger-dim: rgba(239, 68, 68, 0.12);
+  --success: #22c55e;
+  --success-dim: rgba(34, 197, 94, 0.1);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-primary: var(--primary);
-  --color-secondary: var(--secondary);
-  --color-accent: var(--accent);
-  --color-border: var(--border);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-solid: var(--surface-solid);
+  --color-elevated: var(--elevated);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-wash: var(--wash);
+  --color-danger: var(--danger);
+  --color-danger-dim: var(--danger-dim);
+  --color-success: var(--success);
+  --color-success-dim: var(--success-dim);
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-robot: var(--font-space-mono), ui-monospace, monospace;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    @apply bg-canvas font-sans text-ink antialiased;
+    background-image: linear-gradient(
+        180deg,
+        rgba(250, 250, 250, 0.02) 0%,
+        transparent 32%
+      ),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255, 255, 255, 0.015) 2px,
+        rgba(255, 255, 255, 0.015) 4px
+      );
+  }
+
+  ::selection {
+    background-color: rgba(250, 250, 250, 0.15);
+    color: var(--ink);
+  }
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
+/* Same base + texture as Clerk auth modals / app shell (dark, subtle scan lines). */
+/* Scoped Clerk billing: black label on white primary buttons, white muted copy (e.g. "Billed annually"). */
+.clerk-pricing-host {
+  --clerk-color-primary-foreground: #000000;
+  --clerk-color-primary: #ffffff;
+  --clerk-color-muted-foreground: #ffffff;
+  --clerk-color-foreground: #ffffff;
+}
+
+.clerk-auth-surface {
+  background-color: #0a0a0a;
+  background-image: linear-gradient(
+      180deg,
+      rgba(250, 250, 250, 0.025) 0%,
+      transparent 36%
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.018) 2px,
+      rgba(255, 255, 255, 0.018) 4px
+    );
 }

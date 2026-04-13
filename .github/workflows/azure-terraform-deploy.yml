@@ -58,6 +58,8 @@ jobs:
           terraform workspace select azure || terraform workspace new azure
 
       - name: Terraform apply
+        env:
+          TF_VAR_clerk_publishable_key: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
         run: |
           terraform apply -auto-approve \
             -var="openai_api_key=${{ secrets.OPENAI_API_KEY }}" \

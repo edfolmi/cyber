@@ -1,44 +1,52 @@
-import { FileUploadProps } from '@/types/security';
+import { FileUploadProps } from "@/types/security";
 
-/**
- * File upload button component for selecting Python files
- */
-export default function FileUpload({ 
-  fileName, 
-  onFileUpload, 
-  onAnalyzeCode, 
-  isAnalyzing, 
-  hasCode 
+export default function FileUpload({
+  fileName,
+  onFileUpload,
+  onAnalyzeCode,
+  isAnalyzing,
+  hasCode,
+  toolLocked = false,
 }: FileUploadProps) {
+  const disabled = toolLocked;
+
   return (
-    <div className="flex items-center gap-4">
-      {fileName && (
-        <span className="text-sm text-accent bg-secondary/20 px-3 py-1 rounded-full">
+    <div className="flex flex-wrap items-center justify-end gap-2">
+      {fileName ? (
+        <span className="max-w-[220px] truncate border border-line bg-elevated px-2 py-1 font-mono text-[11px] text-ink sm:max-w-xs">
           {fileName}
         </span>
-      )}
-      
+      ) : null}
+
       <input
         type="file"
         accept=".py"
         onChange={onFileUpload}
         className="hidden"
         id="file-upload"
+        disabled={disabled}
       />
-      
-      <label
-        htmlFor="file-upload"
-        className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg cursor-pointer transition-colors font-medium"
-      >
-        Open python file...
-      </label>
-      
+
+      {disabled ? (
+        <span className="border border-line bg-wash px-3 py-2 font-robot text-[0.65rem] font-bold uppercase tracking-wider text-ink-muted">
+          Ingest locked
+        </span>
+      ) : (
+        <label
+          htmlFor="file-upload"
+          className="cursor-pointer border border-line-strong bg-transparent px-3 py-2 font-robot text-[0.65rem] font-bold uppercase tracking-wider text-ink transition-colors hover:border-ink-muted"
+        >
+          Ingest file
+        </label>
+      )}
+
       <button
+        type="button"
         onClick={onAnalyzeCode}
-        disabled={!hasCode || isAnalyzing}
-        className="bg-accent hover:bg-accent/90 disabled:bg-gray-400 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg transition-colors font-medium"
+        disabled={!hasCode || isAnalyzing || disabled}
+        className="border border-ink bg-ink px-4 py-2 font-robot text-[0.65rem] font-bold uppercase tracking-wider text-canvas transition-colors hover:bg-white hover:text-canvas disabled:cursor-not-allowed disabled:border-line disabled:bg-transparent disabled:text-ink-muted"
       >
-        {isAnalyzing ? 'Analyzing...' : 'Analyze code'}
+        {isAnalyzing ? "Scanning…" : "Execute scan"}
       </button>
     </div>
   );

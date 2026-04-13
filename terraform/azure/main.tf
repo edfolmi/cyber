@@ -73,6 +73,12 @@ resource "docker_image" "app" {
     dockerfile = "Dockerfile"
     platform   = "linux/amd64"
     no_cache   = true
+    build_args = {
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = var.clerk_publishable_key
+      NEXT_PUBLIC_CLERK_PLAN_KEY        = var.clerk_plan_key
+      NEXT_PUBLIC_APP_URL               = var.public_app_url
+      NEXT_PUBLIC_API_URL               = var.public_api_url
+    }
   }
 }
 

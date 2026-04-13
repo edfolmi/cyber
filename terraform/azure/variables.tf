@@ -35,3 +35,28 @@ variable "docker_image_tag" {
   type        = string
   default     = "latest"
 }
+
+variable "clerk_publishable_key" {
+  description = "Clerk publishable key (NEXT_PUBLIC); baked into the static frontend at image build time"
+  type        = string
+  sensitive   = true
+  default     = ""
+}
+
+variable "clerk_plan_key" {
+  description = "Clerk Billing plan slug; client checks entitlement as user:{slug}"
+  type        = string
+  default     = "premium_member"
+}
+
+variable "public_app_url" {
+  description = "Optional public site URL for post-checkout redirects (e.g. https://app.example.com)"
+  type        = string
+  default     = ""
+}
+
+variable "public_api_url" {
+  description = "Optional NEXT_PUBLIC_API_URL if the frontend is not same-origin to the API"
+  type        = string
+  default     = ""
+}

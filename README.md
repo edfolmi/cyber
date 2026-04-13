@@ -1,23 +1,20 @@
-# Cyber-Security Agent
+# Cyber security code review app
 
-## A Code Analyzer via Semgrep MCP server for Azure and GCP
+Python security analysis for uploaded `.py` files. The API runs static checks with Semgrep, then an OpenAI agent turns results into a clear report.
 
-![Course Image](assets/cyber.png)
+**Stack**
 
-_If you're looking at this in Cursor, please right click on the filename in the Explorer on the left, and select "Open preview", to view it in formatted glory._
+- **FastAPI** serves the API and the built frontend from one container.
+- **Next.js** UI is exported as static files, same origin as the API in production.
+- **Clerk** handles sign in and subscription billing, gated access to the analyzer.
+- **Azure** via **Terraform**, Container Apps, ACR, remote state, **GitHub Actions** with OIDC to deploy.
 
-### Welcome to the Week 3 Days 1 and 2 project..
+**Repo layout**
 
-Please clone this repo:
+`backend/` FastAPI app, `frontend/` Next app, `terraform/azure/` infra, `.github/workflows/` CI deploy.
 
-```bash
-git clone https://github.com/ed-donner/cyber.git
-```
+**Local**
 
-Then open this as a project in Cursor; then head into the week3 directory and start with guide "day1.part0" - right click and select "Open Preview".
+Run the API (see `backend/`), run `npm run dev` in `frontend/`. Copy `frontend/.env.example` to `.env.local` for Clerk keys. Same machine usually means you can leave `NEXT_PUBLIC_API_URL` empty and hit `http://localhost:8000` in dev.
 
-#### Keep in mind
-
-- Please submit your community_contributions, including links to your repos, in the production repo community_contributions folder
-- Regularly do a git pull to get the latest code
-- Reach out in Udemy or email (ed@edwarddonner.com) if I can help!
+![Course image](assets/cyber.png)

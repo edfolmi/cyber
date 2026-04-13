@@ -1,39 +1,50 @@
-import { CodeInputProps } from '@/types/security';
-import FileUpload from './FileUpload';
+import { CodeInputProps } from "@/types/security";
+import FileUpload from "./FileUpload";
 
-/**
- * Code input section with file upload and code display
- */
 export default function CodeInput({
   codeContent,
   fileName,
   onFileUpload,
   onAnalyzeCode,
-  isAnalyzing
+  isAnalyzing,
+  toolLocked = false,
 }: CodeInputProps) {
   return (
-    <div className="bg-white rounded-lg border border-border shadow-sm p-6 flex flex-col">
-      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-        <label htmlFor="code-input" className="text-lg font-semibold text-foreground">
-          Code to analyze
-        </label>
-        
+    <section className="flex flex-col border border-line bg-surface-solid p-5 sm:p-6">
+      <div className="mb-4 flex flex-shrink-0 flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 bg-success" aria-hidden />
+            <h2 className="font-robot text-sm font-bold uppercase tracking-[0.2em] text-ink">
+              Source buffer
+            </h2>
+          </div>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-muted">
+            One Python module, read-only in this pane. Nothing is modified until you act in your
+            own editor.
+          </p>
+        </div>
         <FileUpload
           fileName={fileName}
           onFileUpload={onFileUpload}
           onAnalyzeCode={onAnalyzeCode}
           isAnalyzing={isAnalyzing}
           hasCode={!!codeContent}
+          toolLocked={toolLocked}
         />
       </div>
-      
+
+      <label htmlFor="code-input" className="sr-only">
+        Python source to review
+      </label>
       <textarea
         id="code-input"
         value={codeContent}
         readOnly
-        placeholder="Select a Python file to display its contents here..."
-        className="flex-1 w-full resize-none border border-border rounded-lg p-4 font-mono text-sm bg-input-bg focus:outline-none focus:ring-2 focus:ring-primary/50"
+        placeholder="// Load a .py file. Payload appears here before scan execution."
+        className="min-h-[200px] flex-1 resize-none border border-line bg-canvas p-3 font-mono text-[12px] leading-relaxed text-ink shadow-none placeholder:text-ink-muted/50 focus:outline-none focus:ring-1 focus:ring-line-strong sm:min-h-[240px] sm:text-[13px]"
+        spellCheck={false}
       />
-    </div>
+    </section>
   );
 }

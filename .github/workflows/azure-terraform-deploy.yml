@@ -1,0 +1,68 @@
+name: Deploy Azure (Terraform)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'azure_project/azure/**'
+      - 'Dockerfile'
+      - 'backend/**'
+      - 'frontend/**'
+      - '.github/workflows/azure-terraform-deploy.yml'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TF_IN_AUTOMATION: true
+  ARM_USE_OIDC: true
+  ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: azure_project/azure
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      - name: Terraform init (Azure backend)
+        run: |
+          terraform init -input=false \
+            -backend-config="resource_group_name=${{ vars.TF_STATE_RG }}" \
+            -backend-config="storage_account_name=${{ vars.TF_STATE_SA }}" \
+            -backend-config="container_name=${{ vars.TF_STATE_CONTAINER }}" \
+            -backend-config="key=azure-project/terraform.tfstate"
+
+      - name: Select Terraform workspace
+        run: |
+          terraform workspace select azure || terraform workspace new azure
+
+      - name: Terraform apply
+        run: |
+          terraform apply -auto-approve \
+            -var="openai_api_key=${{ secrets.OPENAI_API_KEY }}" \
+            -var="semgrep_app_token=${{ secrets.SEMGREP_APP_TOKEN }}" \
+            -var="docker_image_tag=${{ github.sha }}"
+
+      - name: Application URL
+        run: terraform output -raw app_url

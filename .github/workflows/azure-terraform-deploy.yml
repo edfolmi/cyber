@@ -44,7 +44,7 @@ jobs:
         working-directory: frontend
         env:
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
-          NEXT_PUBLIC_CLERK_PLAN_KEY: premium_subscription
+          NEXT_PUBLIC_CLERK_PLAN_KEY: premium_member
           NEXT_PUBLIC_APP_URL: ${{ vars.PUBLIC_APP_URL }}
           NEXT_PUBLIC_API_URL: ${{ vars.PUBLIC_API_URL }}
         run: |

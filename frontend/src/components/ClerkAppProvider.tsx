@@ -118,6 +118,9 @@ export default function ClerkAppProvider({
             fontSize: "1rem",
             fontWeight: "600",
           },
+          userButtonPopoverActionButton: {
+            color: "#ffffff",
+          },
         },
       }}
     >

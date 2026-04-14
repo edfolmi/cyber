@@ -76,6 +76,15 @@ jobs:
         run: |
           terraform workspace select azure || terraform workspace new azure
 
+      # After deleting the app RG / old ACR, state may still point docker_registry_image at the
+      # old registry host; refresh fails with "no auth config". Set Actions variable
+      # TF_RESET_DOCKER_STATE=true for one run, then clear it after a green deploy.
+      - name: Drop stale Docker image state (one-time recovery)
+        if: ${{ vars.TF_RESET_DOCKER_STATE == 'true' }}
+        run: |
+          terraform state rm docker_image.app || true
+          terraform state rm docker_registry_image.app || true
+
       - name: Terraform apply
         env:
           TF_VAR_clerk_publishable_key: ${{ secrets.CLERK_PUBLISHABLE_KEY }}

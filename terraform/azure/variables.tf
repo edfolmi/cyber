@@ -73,3 +73,16 @@ variable "use_existing_log_analytics_workspace" {
   type        = bool
   default     = false
 }
+
+variable "use_existing_container_app_environment" {
+  description = <<-EOT
+    If true, look up an existing Container Apps environment (name = project_name + "-env") in the
+    resource group instead of creating it. Use when Azure already has that environment but Terraform
+    state does not (avoids "already exists" without terraform import). While true, Terraform does not
+    destroy that environment on terraform destroy. In GitHub Actions set repository variable
+    TF_USE_EXISTING_CONTAINER_APP_ENV=true to enable.
+    Do not set true if Terraform state already manages that environment (would plan to destroy it).
+  EOT
+  type        = bool
+  default     = false
+}

@@ -30,6 +30,11 @@ moved {
   to   = azurerm_log_analytics_workspace.main[0]
 }
 
+moved {
+  from = azurerm_container_app_environment.main
+  to   = azurerm_container_app_environment.main[0]
+}
+
 # Add a random acr_suffix to the acr name to make it globally unique.
 resource "random_string" "acr_suffix" {
   length  = 6
@@ -124,11 +129,21 @@ resource "azurerm_log_analytics_workspace" "main" {
 }
 
 locals {
-  log_analytics_workspace_id = var.use_existing_log_analytics_workspace ? data.azurerm_log_analytics_workspace.existing[0].id : azurerm_log_analytics_workspace.main[0].id
+  log_analytics_workspace_id   = var.use_existing_log_analytics_workspace ? data.azurerm_log_analytics_workspace.existing[0].id : azurerm_log_analytics_workspace.main[0].id
+  container_app_environment_id = var.use_existing_container_app_environment ? data.azurerm_container_app_environment.existing[0].id : azurerm_container_app_environment.main[0].id
 }
 
-# Create Container App Environment
+# Optional: adopt Container Apps environment already in Azure when state was lost.
+data "azurerm_container_app_environment" "existing" {
+  count               = var.use_existing_container_app_environment ? 1 : 0
+  name                = "${var.project_name}-env"
+  resource_group_name = data.azurerm_resource_group.main.name
+}
+
+# Create Container App Environment (skipped when use_existing_container_app_environment)
 resource "azurerm_container_app_environment" "main" {
+  count = var.use_existing_container_app_environment ? 0 : 1
+
   name                       = "${var.project_name}-env"
   location                   = data.azurerm_resource_group.main.location
   resource_group_name        = data.azurerm_resource_group.main.name
@@ -146,7 +161,7 @@ resource "azurerm_container_app_environment" "main" {
 # Create Container App
 resource "azurerm_container_app" "main" {
   name                         = var.project_name
-  container_app_environment_id = azurerm_container_app_environment.main.id
+  container_app_environment_id = local.container_app_environment_id
   resource_group_name          = data.azurerm_resource_group.main.name
   revision_mode                = "Single"
 

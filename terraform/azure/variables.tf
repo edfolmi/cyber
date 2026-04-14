@@ -60,3 +60,16 @@ variable "public_api_url" {
   type        = string
   default     = ""
 }
+
+variable "use_existing_log_analytics_workspace" {
+  description = <<-EOT
+    If true, look up an existing Log Analytics workspace (name = project_name + "-logs") in the
+    resource group instead of creating it. Use when Azure already has that workspace but Terraform
+    state does not (avoids "already exists" without terraform import). While true, Terraform does
+    not destroy that workspace on terraform destroy. In GitHub Actions set repository variable
+    TF_USE_EXISTING_LOG_ANALYTICS=true to enable.
+    Do not set true if Terraform state already manages that workspace (would plan to destroy it).
+  EOT
+  type        = bool
+  default     = false
+}

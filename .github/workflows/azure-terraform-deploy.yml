@@ -84,7 +84,8 @@ jobs:
             -var="semgrep_app_token=${{ secrets.SEMGREP_APP_TOKEN }}" \
             -var="docker_image_tag=${{ github.sha }}" \
             -var="public_app_url=${{ vars.PUBLIC_APP_URL }}" \
-            -var="public_api_url=${{ vars.PUBLIC_API_URL }}"
+            -var="public_api_url=${{ vars.PUBLIC_API_URL }}" \
+            -var="use_existing_log_analytics_workspace=${{ vars.TF_USE_EXISTING_LOG_ANALYTICS == 'true' }}"
 
       - name: Application URL
         run: terraform output -raw app_url

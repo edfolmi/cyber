@@ -24,6 +24,12 @@ provider "azurerm" {
   features {}
 }
 
+# Upgrade path: workspace was unindexed; now uses count on the managed resource.
+moved {
+  from = azurerm_log_analytics_workspace.main
+  to   = azurerm_log_analytics_workspace.main[0]
+}
+
 # Add a random acr_suffix to the acr name to make it globally unique.
 resource "random_string" "acr_suffix" {
   length  = 6
@@ -90,8 +96,17 @@ resource "docker_registry_image" "app" {
   depends_on = [docker_image.app]
 }
 
-# Create Log Analytics Workspace for monitoring
+# Optional: adopt a workspace already in Azure when state was lost (see variable description).
+data "azurerm_log_analytics_workspace" "existing" {
+  count               = var.use_existing_log_analytics_workspace ? 1 : 0
+  name                = "${var.project_name}-logs"
+  resource_group_name = data.azurerm_resource_group.main.name
+}
+
+# Create Log Analytics Workspace for monitoring (skipped when use_existing_log_analytics_workspace)
 resource "azurerm_log_analytics_workspace" "main" {
+  count = var.use_existing_log_analytics_workspace ? 0 : 1
+
   name                = "${var.project_name}-logs"
   location            = data.azurerm_resource_group.main.location
   resource_group_name = data.azurerm_resource_group.main.name
@@ -108,12 +123,19 @@ resource "azurerm_log_analytics_workspace" "main" {
   }
 }
 
+locals {
+  log_analytics_workspace_id = var.use_existing_log_analytics_workspace ? data.azurerm_log_analytics_workspace.existing[0].id : azurerm_log_analytics_workspace.main[0].id
+}
+
 # Create Container App Environment
 resource "azurerm_container_app_environment" "main" {
   name                       = "${var.project_name}-env"
   location                   = data.azurerm_resource_group.main.location
   resource_group_name        = data.azurerm_resource_group.main.name
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
+  log_analytics_workspace_id = local.log_analytics_workspace_id
+
+  # When linking an existing workspace (data source), still wait for the image before Azure app resources.
+  depends_on = [docker_registry_image.app]
 
   tags = {
     environment = terraform.workspace

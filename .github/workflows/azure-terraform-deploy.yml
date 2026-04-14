@@ -88,7 +88,8 @@ jobs:
             -var="public_api_url=${{ vars.PUBLIC_API_URL }}" \
             -var="use_existing_log_analytics_workspace=${{ vars.TF_USE_EXISTING_LOG_ANALYTICS == 'true' }}" \
             -var="use_existing_container_app_environment=${{ vars.TF_USE_EXISTING_CONTAINER_APP_ENV == 'true' }}" \
-            -var="existing_container_app_environment_id=${{ vars.TF_EXISTING_CONTAINER_APP_ENV_ID }}"
+            -var="existing_container_app_environment_id=${{ vars.TF_EXISTING_CONTAINER_APP_ENV_ID }}" \
+            -var="use_existing_container_app=${{ vars.TF_USE_EXISTING_CONTAINER_APP == 'true' }}"
 
       - name: Application URL
         run: terraform output -raw app_url

@@ -42,6 +42,11 @@ moved {
   to   = azurerm_container_app_environment.main[0]
 }
 
+moved {
+  from = azurerm_container_app.main
+  to   = azurerm_container_app.main[0]
+}
+
 # Add a random acr_suffix to the acr name to make it globally unique.
 resource "random_string" "acr_suffix" {
   length  = 6
@@ -158,8 +163,17 @@ resource "azurerm_container_app_environment" "main" {
   }
 }
 
-# Create Container App
+# Optional: adopt Container App already in Azure when state was lost (see variable description).
+data "azurerm_container_app" "existing" {
+  count               = var.use_existing_container_app ? 1 : 0
+  name                = var.project_name
+  resource_group_name = data.azurerm_resource_group.main.name
+}
+
+# Create Container App (skipped when use_existing_container_app; then import for image updates)
 resource "azurerm_container_app" "main" {
+  count = var.use_existing_container_app ? 0 : 1
+
   name                         = var.project_name
   container_app_environment_id = local.container_app_environment_id
   resource_group_name          = data.azurerm_resource_group.main.name
@@ -225,9 +239,13 @@ resource "azurerm_container_app" "main" {
   }
 }
 
+locals {
+  app_public_fqdn = var.use_existing_container_app ? data.azurerm_container_app.existing[0].ingress[0].fqdn : azurerm_container_app.main[0].ingress[0].fqdn
+}
+
 # Outputs
 output "app_url" {
-  value       = "https://${azurerm_container_app.main.ingress[0].fqdn}"
+  value       = "https://${local.app_public_fqdn}"
   description = "URL of the deployed application"
 }
 

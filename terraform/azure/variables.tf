@@ -97,3 +97,14 @@ variable "existing_container_app_environment_id" {
   default     = ""
   sensitive   = false
 }
+
+variable "use_existing_container_app" {
+  description = <<-EOT
+    If true, read the existing Container App (name = project_name in resource_group_name) instead of creating it.
+    Use when Azure already has the app but Terraform state does not. GitHub: TF_USE_EXISTING_CONTAINER_APP=true.
+    While true, Terraform does not update image, env, or ingress for that app. After state is healthy, run
+    terraform import 'azurerm_container_app.main[0]' <ARM id from Portal JSON> and set this to false so CI can manage deploys.
+  EOT
+  type        = bool
+  default     = false
+}

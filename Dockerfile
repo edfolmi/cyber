@@ -1,5 +1,5 @@
-# Build frontend
-FROM node:20-alpine AS frontend-build
+# Build frontend (Debian, not Alpine: better compatibility for Next.js + Tailwind v4 native tooling on linux/amd64)
+FROM node:20-bookworm-slim AS frontend-build
 WORKDIR /app
 COPY frontend/package*.json ./
 RUN npm ci
@@ -14,6 +14,8 @@ ENV NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=$NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_CLERK_PLAN_KEY=$NEXT_PUBLIC_CLERK_PLAN_KEY
 ENV NEXT_PUBLIC_APP_URL=$NEXT_PUBLIC_APP_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS=--max-old-space-size=6144
 
 RUN npm run build
 

@@ -14,8 +14,9 @@ dist/
 downloads/
 eggs/
 .eggs/
-# Root-only: avoid ignoring frontend/src/lib (Next.js modules)
-/lib/
+# Root-only: avoid ignoring frontend/src/lib (Next.js @/lib/* imports). A bare `lib/` rule
+# ignores every `lib` directory in the repo and breaks CI with "Module not found".
+# /lib/
 /lib64/
 parts/
 sdist/

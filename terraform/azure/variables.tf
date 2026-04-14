@@ -76,13 +76,24 @@ variable "use_existing_log_analytics_workspace" {
 
 variable "use_existing_container_app_environment" {
   description = <<-EOT
-    If true, look up an existing Container Apps environment (name = project_name + "-env") in the
-    resource group instead of creating it. Use when Azure already has that environment but Terraform
-    state does not (avoids "already exists" without terraform import). While true, Terraform does not
-    destroy that environment on terraform destroy. In GitHub Actions set repository variable
-    TF_USE_EXISTING_CONTAINER_APP_ENV=true to enable.
+    If true, use an existing Container Apps environment by resource ID instead of creating one.
+    Required together with existing_container_app_environment_id (data source lookup was removed
+    because azurerm can error with "no matching workspace found" when resolving the env's linked
+    Log Analytics workspace). Set GitHub variables TF_USE_EXISTING_CONTAINER_APP_ENV=true and
+    TF_EXISTING_CONTAINER_APP_ENV_ID to the full ARM id from Portal → environment → JSON view.
+    While true, Terraform does not destroy that environment on terraform destroy.
     Do not set true if Terraform state already manages that environment (would plan to destroy it).
   EOT
   type        = bool
   default     = false
+}
+
+variable "existing_container_app_environment_id" {
+  description = <<-EOT
+    Full Azure resource ID of the Container Apps environment (e.g. /subscriptions/.../managedEnvironments/cyber-analyzer-env).
+    Required when use_existing_container_app_environment is true; ignored otherwise.
+  EOT
+  type        = string
+  default     = ""
+  sensitive   = false
 }

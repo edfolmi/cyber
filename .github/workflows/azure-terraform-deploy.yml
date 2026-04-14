@@ -61,6 +61,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
+          terraform_version: "1.9.0"
           terraform_wrapper: false
 
       - name: Terraform init (Azure backend)
@@ -86,7 +87,8 @@ jobs:
             -var="public_app_url=${{ vars.PUBLIC_APP_URL }}" \
             -var="public_api_url=${{ vars.PUBLIC_API_URL }}" \
             -var="use_existing_log_analytics_workspace=${{ vars.TF_USE_EXISTING_LOG_ANALYTICS == 'true' }}" \
-            -var="use_existing_container_app_environment=${{ vars.TF_USE_EXISTING_CONTAINER_APP_ENV == 'true' }}"
+            -var="use_existing_container_app_environment=${{ vars.TF_USE_EXISTING_CONTAINER_APP_ENV == 'true' }}" \
+            -var="existing_container_app_environment_id=${{ vars.TF_EXISTING_CONTAINER_APP_ENV_ID }}"
 
       - name: Application URL
         run: terraform output -raw app_url

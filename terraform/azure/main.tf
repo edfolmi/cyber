@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 1.0"
+  required_version = ">= 1.5"
 
   backend "azurerm" {}
 
@@ -22,6 +22,13 @@ terraform {
 # Configure Azure Provider
 provider "azurerm" {
   features {}
+}
+
+check "existing_container_app_environment_id" {
+  assert {
+    condition     = !var.use_existing_container_app_environment || var.existing_container_app_environment_id != ""
+    error_message = "When use_existing_container_app_environment is true, set existing_container_app_environment_id to the environment ARM resource ID (Azure Portal → environment → JSON view → id). In GitHub set variable TF_EXISTING_CONTAINER_APP_ENV_ID."
+  }
 }
 
 # Upgrade path: workspace was unindexed; now uses count on the managed resource.
@@ -130,14 +137,7 @@ resource "azurerm_log_analytics_workspace" "main" {
 
 locals {
   log_analytics_workspace_id   = var.use_existing_log_analytics_workspace ? data.azurerm_log_analytics_workspace.existing[0].id : azurerm_log_analytics_workspace.main[0].id
-  container_app_environment_id = var.use_existing_container_app_environment ? data.azurerm_container_app_environment.existing[0].id : azurerm_container_app_environment.main[0].id
-}
-
-# Optional: adopt Container Apps environment already in Azure when state was lost.
-data "azurerm_container_app_environment" "existing" {
-  count               = var.use_existing_container_app_environment ? 1 : 0
-  name                = "${var.project_name}-env"
-  resource_group_name = data.azurerm_resource_group.main.name
+  container_app_environment_id = var.use_existing_container_app_environment ? var.existing_container_app_environment_id : azurerm_container_app_environment.main[0].id
 }
 
 # Create Container App Environment (skipped when use_existing_container_app_environment)

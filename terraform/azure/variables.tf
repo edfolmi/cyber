@@ -11,9 +11,13 @@ variable "location" {
 }
 
 variable "resource_group_name" {
-  description = "Name of the resource group"
+  description = <<-EOT
+    Resource group for application resources (ACR, Container Apps, Log Analytics, etc.).
+    Must NOT be the same RG you use only for Terraform remote state (e.g. terraform-state-rg).
+    Create a dedicated RG for the app (e.g. cyber-analyzer-rg) in the same subscription/region.
+  EOT
   type        = string
-  default     = "terraform-state-rg"
+  default     = "cyber-analyzer-rg"
 }
 
 variable "openai_api_key" {

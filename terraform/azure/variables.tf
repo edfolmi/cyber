@@ -13,7 +13,7 @@ variable "location" {
 variable "resource_group_name" {
   description = "Name of the resource group"
   type        = string
-  default     = "cyber-analyzer-rg"
+  default     = "terraform-state-rg"
 }
 
 variable "openai_api_key" {

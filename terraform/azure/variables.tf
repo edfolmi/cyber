@@ -12,9 +12,10 @@ variable "location" {
 
 variable "resource_group_name" {
   description = <<-EOT
-    Resource group for application resources (ACR, Container Apps, Log Analytics, etc.).
-    Must NOT be the same RG you use only for Terraform remote state (e.g. terraform-state-rg).
-    Create a dedicated RG for the app (e.g. cyber-analyzer-rg) in the same subscription/region.
+    Name of the resource group Terraform creates for application resources (ACR, Container Apps, etc.).
+    Must NOT be the RG used only for remote state (e.g. terraform-state-rg).
+    If this RG already exists in Azure from outside Terraform, import it first:
+    terraform import azurerm_resource_group.main /subscriptions/<sub>/resourceGroups/<this-name>
   EOT
   type        = string
   default     = "cyber-analyzer-rg"

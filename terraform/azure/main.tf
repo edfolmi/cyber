@@ -61,16 +61,22 @@ locals {
   acr_name = "${substr(local.acr_basename, 0, 40)}${random_string.acr_suffix.result}"
 }
 
-# Use existing resource group
-data "azurerm_resource_group" "main" {
-  name = var.resource_group_name
+# Application resource group (created by Terraform; no manual RG step required)
+resource "azurerm_resource_group" "main" {
+  name     = var.resource_group_name
+  location = var.location
+
+  tags = {
+    environment = terraform.workspace
+    project     = var.project_name
+  }
 }
 
 # Create Azure Container Registry
 resource "azurerm_container_registry" "acr" {
   name                = local.acr_name
-  resource_group_name = data.azurerm_resource_group.main.name
-  location            = data.azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
   sku                 = "Basic"
   admin_enabled       = true
 
@@ -117,7 +123,7 @@ resource "docker_registry_image" "app" {
 data "azurerm_log_analytics_workspace" "existing" {
   count               = var.use_existing_log_analytics_workspace ? 1 : 0
   name                = "${var.project_name}-logs"
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main.name
 }
 
 # Create Log Analytics Workspace for monitoring (skipped when use_existing_log_analytics_workspace)
@@ -125,8 +131,8 @@ resource "azurerm_log_analytics_workspace" "main" {
   count = var.use_existing_log_analytics_workspace ? 0 : 1
 
   name                = "${var.project_name}-logs"
-  location            = data.azurerm_resource_group.main.location
-  resource_group_name = data.azurerm_resource_group.main.name
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
   sku                 = "PerGB2018"
   retention_in_days   = 30
 
@@ -150,8 +156,8 @@ resource "azurerm_container_app_environment" "main" {
   count = var.use_existing_container_app_environment ? 0 : 1
 
   name                       = "${var.project_name}-env"
-  location                   = data.azurerm_resource_group.main.location
-  resource_group_name        = data.azurerm_resource_group.main.name
+  location                   = azurerm_resource_group.main.location
+  resource_group_name        = azurerm_resource_group.main.name
   log_analytics_workspace_id = local.log_analytics_workspace_id
 
   # When linking an existing workspace (data source), still wait for the image before Azure app resources.
@@ -167,7 +173,7 @@ resource "azurerm_container_app_environment" "main" {
 data "azurerm_container_app" "existing" {
   count               = var.use_existing_container_app ? 1 : 0
   name                = var.project_name
-  resource_group_name = data.azurerm_resource_group.main.name
+  resource_group_name = azurerm_resource_group.main.name
 }
 
 # Create Container App (skipped when use_existing_container_app; then import for image updates)
@@ -176,7 +182,7 @@ resource "azurerm_container_app" "main" {
 
   name                         = var.project_name
   container_app_environment_id = local.container_app_environment_id
-  resource_group_name          = data.azurerm_resource_group.main.name
+  resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
 
   template {
@@ -255,6 +261,6 @@ output "acr_login_server" {
 }
 
 output "resource_group" {
-  value       = data.azurerm_resource_group.main.name
+  value       = azurerm_resource_group.main.name
   description = "Resource group name"
 }

@@ -30,9 +30,12 @@
   --color-danger-dim: var(--danger-dim);
   --color-success: var(--success);
   --color-success-dim: var(--success-dim);
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
-  --font-robot: var(--font-space-mono), ui-monospace, monospace;
-  --font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+  /* System stacks only: avoids next/font Google fetches during `next build` (Docker/CI). */
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-robot: ui-monospace, "Cascadia Code", "Consolas", "Liberation Mono",
+    monospace;
+  --font-mono: ui-monospace, "Cascadia Code", "Consolas", "Liberation Mono",
+    monospace;
 }
 
 @layer base {

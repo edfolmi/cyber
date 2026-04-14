@@ -1,27 +1,7 @@
 import type { Metadata } from "next";
-import { Inter, JetBrains_Mono, Space_Mono } from "next/font/google";
 import ClerkAppProvider from "@/components/ClerkAppProvider";
 import SiteHeader from "@/components/SiteHeader";
 import "./globals.css";
-
-const spaceMono = Space_Mono({
-  weight: ["400", "700"],
-  subsets: ["latin"],
-  variable: "--font-space-mono",
-  display: "swap",
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   title: "Read-through: Python security review",
@@ -36,9 +16,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body
-        className={`${spaceMono.variable} ${inter.variable} ${jetbrainsMono.variable}`}
-      >
+      <body>
         <ClerkAppProvider>
           <header className="border-b border-line bg-surface-solid">
             <div className="mx-auto flex max-w-7xl flex-col gap-3 px-6 py-3.5 sm:flex-row sm:items-center sm:justify-between">

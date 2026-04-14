@@ -20,8 +20,8 @@ export default function ClerkAppProvider({
           colorDanger: "#f87171",
           colorSuccess: "#4ade80",
           borderRadius: "0.25rem",
-          fontFamily: '"JetBrains Mono", ui-monospace, monospace',
-          fontFamilyButtons: '"Space Mono", ui-monospace, monospace',
+          fontFamily: 'ui-monospace, "Cascadia Code", Consolas, monospace',
+          fontFamilyButtons: 'ui-monospace, "Cascadia Code", Consolas, monospace',
         },
         elements: {
           drawerOverlay: { zIndex: 99999, backgroundColor: "rgba(0,0,0,0.85)" },
@@ -100,7 +100,7 @@ export default function ClerkAppProvider({
           formButtonPrimary: {
             backgroundColor: "#ffffff",
             color: "#000000",
-            fontFamily: '"Space Mono", monospace',
+            fontFamily: 'ui-monospace, monospace',
             textTransform: "uppercase",
             letterSpacing: "0.06em",
             fontSize: "0.8125rem",
